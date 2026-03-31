@@ -1,0 +1,356 @@
+openapi: 3.0.0
+info:
+  title: StudyBuddy API
+  description: API documentation for the StudyBuddy platform backend.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+    Subject:
+      type: object
+      properties:
+        _id:
+          type: string
+        subjectName:
+          type: string
+        userId:
+          type: string
+    Note:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        fileLink:
+          type: string
+        subjectId:
+          type: string
+        userId:
+          type: string
+    Assignment:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+        status:
+          type: string
+        subjectId:
+          type: string
+    Doubt:
+      type: object
+      properties:
+        _id:
+          type: string
+        question:
+          type: string
+        answers:
+          type: array
+          items:
+            type: string
+        userId:
+          type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+security:
+  - cookieAuth: []
+
+paths:
+  /signup:
+    post:
+      security: []
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Validation error
+
+  /login:
+    post:
+      security: []
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Logged in successfully
+        '401':
+          description: Invalid credentials
+
+  /logout:
+    post:
+      summary: Logout user
+      responses:
+        '200':
+          description: Logged out successfully
+        '401':
+          description: Unauthorized
+
+  /subjects:
+    post:
+      summary: Create a subject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - subjectName
+              properties:
+                subjectName:
+                  type: string
+      responses:
+        '201':
+          description: Subject created
+        '400':
+          description: Error
+        '401':
+          description: Unauthorized
+    get:
+      summary: Get user subjects
+      responses:
+        '200':
+          description: List of subjects
+        '401':
+          description: Unauthorized
+
+  /notes:
+    post:
+      summary: Create a note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - fileLink
+                - subjectId
+              properties:
+                title:
+                  type: string
+                fileLink:
+                  type: string
+                subjectId:
+                  type: string
+      responses:
+        '201':
+          description: Note created
+        '400':
+          description: Error
+        '401':
+          description: Unauthorized
+    get:
+      summary: Get user notes
+      responses:
+        '200':
+          description: List of notes
+        '401':
+          description: Unauthorized
+
+  /assignments:
+    post:
+      summary: Create an assignment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - deadline
+                - subjectId
+              properties:
+                title:
+                  type: string
+                deadline:
+                  type: string
+                  format: date-time
+                subjectId:
+                  type: string
+      responses:
+        '201':
+          description: Assignment created
+        '400':
+          description: Error
+        '401':
+          description: Unauthorized
+    get:
+      summary: Get user assignments
+      responses:
+        '200':
+          description: List of user assignments
+        '401':
+          description: Unauthorized
+
+  /assignments/{id}:
+    put:
+      summary: Update assignment status/details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                deadline:
+                  type: string
+                  format: date-time
+                status:
+                  type: string
+                  example: incomplete
+      responses:
+        '200':
+          description: Assignment updated
+        '400':
+          description: Error
+        '401':
+          description: Unauthorized
+    delete:
+      summary: Delete an assignment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Assignment deleted
+        '400':
+          description: Error
+        '401':
+          description: Unauthorized
+
+  /doubts:
+    post:
+      summary: Post a doubt/question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+              properties:
+                question:
+                  type: string
+      responses:
+        '201':
+          description: Doubt posted
+        '400':
+          description: Error
+        '401':
+          description: Unauthorized
+    get:
+      summary: Get all doubts
+      responses:
+        '200':
+          description: List of doubts
+        '401':
+          description: Unauthorized
+
+  /doubts/{id}/answers:
+    post:
+      summary: Answer a doubt
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - answer
+              properties:
+                answer:
+                  type: string
+      responses:
+        '200':
+          description: Answer posted
+        '400':
+          description: Error
+        '401':
+          description: Unauthorized
+
+  /dashboard:
+    get:
+      summary: Get user dashboard data
+      responses:
+        '200':
+          description: Aggregated user data (subjects, notes, assignments)
+        '401':
+          description: Unauthorized
