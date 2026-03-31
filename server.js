@@ -13,7 +13,7 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -31,7 +31,7 @@ app.use(
   })
 );
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/studybuddy";
+const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB connection error:", err));
