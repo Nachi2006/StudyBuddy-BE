@@ -4,6 +4,9 @@ exports.signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const user = new User({ name, email, password });
+    if(!user) return res.status(400).json({ error: "Invalid user data" });
+    const exist = await User.findOne({ email });
+    if (exist) return res.status(400).json({ error: "User already exists" });
     await user.save();
     req.session.userId = user._id;
     res.status(201).json(user);
