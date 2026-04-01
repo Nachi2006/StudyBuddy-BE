@@ -32,7 +32,6 @@ const getSubjectById = async (req, res) => {
     }
 };
 
-// In your Express backend
 
 module.exports = {
   createSubject,

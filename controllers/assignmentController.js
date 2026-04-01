@@ -1,6 +1,6 @@
 const Assignment = require("../models/Assignment");
 
-exports.createAssignment = async (req, res) => {
+const createAssignment = async (req, res) => {
   try {
     const { title, deadline, subjectId } = req.body;
     const assignment = new Assignment({ title, deadline, subjectId });
@@ -11,7 +11,7 @@ exports.createAssignment = async (req, res) => {
   }
 };
 
-exports.getAssignments = async (req, res) => {
+const getAssignments = async (req, res) => {
   try {
     const assignments = await Assignment.find().populate({
       path: "subjectId",
@@ -24,7 +24,7 @@ exports.getAssignments = async (req, res) => {
   }
 };
 
-exports.updateAssignment = async (req, res) => {
+const updateAssignment = async (req, res) => {
   try {
     const { title, deadline, status } = req.body;
     const assignment = await Assignment.findByIdAndUpdate(
@@ -38,7 +38,7 @@ exports.updateAssignment = async (req, res) => {
   }
 };
 
-exports.deleteAssignment = async (req, res) => {
+const deleteAssignment = async (req, res) => {
   try {
     await Assignment.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Deleted" });
@@ -46,3 +46,5 @@ exports.deleteAssignment = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+module.exports = {createAssignment,getAssignments,updateAssignment,deleteAssignment}

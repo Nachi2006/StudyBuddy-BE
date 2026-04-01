@@ -1,6 +1,6 @@
 const Doubt = require("../models/Doubt");
 
-exports.createDoubt = async (req, res) => {
+const createDoubt = async (req, res) => {
   try {
     const { question } = req.body;
     const doubt = new Doubt({ question, userId: req.session.userId });
@@ -11,7 +11,7 @@ exports.createDoubt = async (req, res) => {
   }
 };
 
-exports.answerDoubt = async (req, res) => {
+const answerDoubt = async (req, res) => {
   try {
     const { answer } = req.body;
     const doubt = await Doubt.findById(req.params.id);
@@ -23,7 +23,7 @@ exports.answerDoubt = async (req, res) => {
   }
 };
 
-exports.getDoubts = async (req, res) => {
+const getDoubts = async (req, res) => {
   try {
     const doubts = await Doubt.find();
     res.status(200).json(doubts);
@@ -31,3 +31,5 @@ exports.getDoubts = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+module.exports = {createDoubt,answerDoubt,getDoubts}
