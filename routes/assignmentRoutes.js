@@ -5,6 +5,7 @@ const requireLogin = require("../middleware/auth");
 
 router.post("/", requireLogin, assignmentController.createAssignment);
 router.get("/", requireLogin, assignmentController.getAssignments);
+router.get("/:id", requireLogin, assignmentController.getAssignmentById);
 router.put("/:id", requireLogin, assignmentController.updateAssignment);
 router.delete("/:id", requireLogin, assignmentController.deleteAssignment);
 

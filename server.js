@@ -11,11 +11,19 @@ const doubtRoutes = require("./routes/doubtRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
+console.log('CORS origin:', process.env.CORS_ORIGIN || 'http://localhost:3200');
+
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3200';
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: function(origin, callback) {
+    // Allow requests with no origin (e.g. mobile apps, Postman, curl)
+    // and requests from null (file:// protocol) or the configured origin
+    if (!origin || origin === 'null' || origin === CORS_ORIGIN) {
+      return callback(null, true);
+    }
+    callback(new Error(`CORS policy: origin ${origin} not allowed`));
+  },
   credentials: true
 }));
 
@@ -25,9 +33,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "default-secret-key",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false } 
+    resave: true,
+    saveUninitialized: true,
+    cookie: { 
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      secure: false, // Set to true if using HTTPS
+      httpOnly: true,
+      sameSite: 'lax'
+    }
   })
 );
 

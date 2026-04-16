@@ -32,4 +32,39 @@ const getDoubts = async (req, res) => {
   }
 };
 
-module.exports = {createDoubt,answerDoubt,getDoubts}
+const getDoubtById = async (req, res) => {
+  try {
+    const doubt = await Doubt.findById(req.params.id);
+    if (!doubt) return res.status(404).json({ error: "Doubt not found" });
+    res.status(200).json(doubt);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const updateDoubt = async (req, res) => {
+  try {
+    const { question } = req.body;
+    const doubt = await Doubt.findOneAndUpdate(
+      { _id: req.params.id, userId: req.session.userId },
+      { question },
+      { new: true }
+    );
+    if (!doubt) return res.status(404).json({ error: "Doubt not found or unauthorized" });
+    res.status(200).json(doubt);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const deleteDoubt = async (req, res) => {
+  try {
+    const doubt = await Doubt.findOneAndDelete({ _id: req.params.id, userId: req.session.userId });
+    if (!doubt) return res.status(404).json({ error: "Doubt not found or unauthorized" });
+    res.status(200).json({ message: "Doubt deleted" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = { createDoubt, answerDoubt, getDoubts, getDoubtById, updateDoubt, deleteDoubt };

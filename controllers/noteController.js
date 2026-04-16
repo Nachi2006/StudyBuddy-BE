@@ -20,4 +20,39 @@ const getNotes = async (req, res) => {
   }
 };
 
-module.exports = {createNote,getNotes}
+const getNoteById = async (req, res) => {
+  try {
+    const note = await Note.findOne({ _id: req.params.id, userId: req.session.userId }).populate("subjectId");
+    if (!note) return res.status(404).json({ error: "Note not found" });
+    res.status(200).json(note);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const updateNote = async (req, res) => {
+  try {
+    const { title, fileLink, subjectId } = req.body;
+    const note = await Note.findOneAndUpdate(
+      { _id: req.params.id, userId: req.session.userId },
+      { title, fileLink, subjectId },
+      { new: true }
+    );
+    if (!note) return res.status(404).json({ error: "Note not found" });
+    res.status(200).json(note);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const deleteNote = async (req, res) => {
+  try {
+    const note = await Note.findOneAndDelete({ _id: req.params.id, userId: req.session.userId });
+    if (!note) return res.status(404).json({ error: "Note not found" });
+    res.status(200).json({ message: "Note deleted" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = { createNote, getNotes, getNoteById, updateNote, deleteNote }
